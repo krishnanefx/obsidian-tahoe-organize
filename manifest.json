@@ -1,0 +1,10 @@
+{
+  "id": "tahoe-organize",
+  "name": "Tahoe Organize",
+  "version": "1.2.0",
+  "minAppVersion": "1.13.0",
+  "description": "Keep a growing vault tidy: inbox triage, smart folders, colored tags, link suggestions as you type, a vault health check, iCloud conflict fixing, literature notes from arXiv and DOI links, and search for text in images.",
+  "author": "Krishnan Adaikkappan",
+  "isDesktopOnly": false,
+  "authorUrl": "https://github.com/krishnanefx"
+}

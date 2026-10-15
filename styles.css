@@ -1,0 +1,1012 @@
+/* Tahoe Organize — System Settings-style pages, Finder-style rows. Uses Tahoe tokens when present.
+   Pages match the Settings window: 16px grouped cards, the same header card
+   and icon tiles, hairlines inset to the text. */
+.tahoe-organize-view,
+.tahoe-organize-alert,
+.tahoe-smart-modal {
+  --tahoe-organize-radius: 16px;
+  --tahoe-organize-card: var(--tahoe-settings-card, var(--background-secondary));
+  --tahoe-organize-line: var(--tahoe-separator, var(--background-modifier-border));
+}
+
+/* ---- Tool pages (Vault health, iCloud conflicts) ---- */
+.workspace-leaf-content > .view-content.tahoe-organize-view {
+  padding: 24px 28px 48px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* Clear Tahoe's floating toolbar when the theme is on (0 with other themes);
+   the second selector is as specific as the theme's own padding for pages. */
+body:not(.is-mobile) .mod-root .workspace-leaf-content > .view-content.tahoe-organize-view,
+body:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) .workspace-leaf-content > .view-content.tahoe-organize-view {
+  padding-top: calc(var(--tahoe-toolbar, 0px) + 24px);
+}
+
+/* Header card — the same as Settings' (Tahoe Glass) */
+.tahoe-organize-hero {
+  text-align: center;
+  padding: 26px 28px 22px;
+  margin-bottom: 20px;
+  border-radius: var(--tahoe-organize-radius);
+  background: var(--tahoe-organize-card);
+}
+
+/* Icon tiles: a top-lit gradient of one tile color, as in System Settings */
+.tahoe-organize-hero-icon,
+.tahoe-organize-row-icon {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--tahoe-tile, #8e8e93) 72%, #ffffff), var(--tahoe-tile, #8e8e93));
+  box-shadow: inset 0 0 0 0.5px var(--tahoe-tile-edge, rgb(0 0 0 / 0.08)), 0 0.5px 1px rgb(0 0 0 / 0.14);
+}
+
+.tahoe-organize-hero-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 13px;
+  --icon-size: 32px;
+  --icon-stroke: 1.9px;
+  box-shadow: inset 0 0 0 0.5px var(--tahoe-tile-edge, rgb(0 0 0 / 0.08)), 0 1px 3px rgb(0 0 0 / 0.16);
+}
+
+.tahoe-organize-hero-icon.is-blue { --tahoe-tile: #0a84ff; }
+.tahoe-organize-hero-icon.is-pink { --tahoe-tile: #ff2d55; }
+
+.tahoe-organize-hero-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+}
+
+.tahoe-organize-hero-desc {
+  max-width: 460px;
+  margin: 6px auto 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.tahoe-organize-hero-actions {
+  margin-top: 14px;
+}
+
+.tahoe-organize-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tahoe-organize-stat {
+  padding: 12px 16px;
+  border-radius: var(--tahoe-organize-radius);
+  background: var(--tahoe-organize-card);
+}
+
+.tahoe-organize-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tahoe-organize-stat.is-orange .tahoe-organize-stat-value { color: var(--color-orange); }
+.tahoe-organize-stat.is-green .tahoe-organize-stat-value { color: var(--color-green); }
+
+.tahoe-organize-stat-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.tahoe-organize-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  border-radius: var(--tahoe-organize-radius);
+  background: color-mix(in srgb, var(--color-blue) 12%, transparent);
+  font-size: 13px;
+}
+
+.tahoe-organize-banner > span:nth-child(2) { flex: 1; }
+.tahoe-organize-banner-icon { display: inline-flex; color: var(--color-blue); }
+
+.tahoe-organize-section {
+  margin-bottom: 22px;
+}
+
+.tahoe-organize-section-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 0 4px 8px;
+}
+
+.tahoe-organize-section-text { flex: 1; }
+
+.tahoe-organize-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tahoe-organize-section-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.tahoe-organize-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-on-accent);
+  background: var(--color-orange);
+}
+
+.tahoe-organize-count.is-zero {
+  color: var(--text-muted);
+  background: var(--background-modifier-hover);
+}
+
+.tahoe-organize-card {
+  border-radius: var(--tahoe-organize-radius);
+  background: var(--tahoe-organize-card);
+  overflow: hidden;
+}
+
+.tahoe-organize-row {
+  position: relative;
+  padding: 10px 16px;
+}
+
+/* Hairlines start where the text does, as in System Settings */
+.tahoe-organize-row + .tahoe-organize-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 52px 0;
+  height: 1px;
+  background: var(--tahoe-organize-line);
+}
+
+.tahoe-organize-row:is(.is-ok, .is-more) + .tahoe-organize-row::before,
+.tahoe-organize-row + .tahoe-organize-row:is(.is-ok, .is-more)::before {
+  inset-inline-start: 16px;
+}
+
+.tahoe-organize-row-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tahoe-organize-row-icon {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  --icon-size: 15px;
+  --icon-stroke: 2px;
+}
+
+.tahoe-organize-row-icon.is-file { --tahoe-tile: #0a84ff; }
+.tahoe-organize-row-icon.is-folder { --tahoe-tile: #32ade6; }
+
+/* Vault health: one tile color per kind of problem (the icon's name is a class) */
+.tahoe-organize-row-icon.is-unlink { --tahoe-tile: #ff9500; }
+.tahoe-organize-row-icon.is-file-x { --tahoe-tile: #8e8e93; }
+.tahoe-organize-row-icon.is-paperclip { --tahoe-tile: #af52de; }
+.tahoe-organize-row-icon.is-hard-drive { --tahoe-tile: #5856d6; }
+.tahoe-organize-row-icon.is-file-symlink { --tahoe-tile: #30b0c7; }
+.tahoe-organize-row-icon.is-copy { --tahoe-tile: #bf5af2; }
+
+/* Duplicate ideas (Tahoe Intelligence) */
+.tahoe-organize-thinking {
+  --tahoe-ai: linear-gradient(135deg, #0a84ff 0%, #bf5af2 42%, #ff375f 74%, #ff9f0a 100%);
+}
+
+.tahoe-organize-thinking .tahoe-triage-ai-icon {
+  animation: tahoe-triage-pulse 1.2s ease-in-out infinite;
+}
+
+.tahoe-organize-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0 2px 36px;
+}
+
+.tahoe-organize-compare-col {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--background-primary);
+}
+
+.tahoe-organize-compare-title {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.tahoe-organize-compare-point {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--text-accent);
+}
+
+.tahoe-organize-compare-body {
+  margin-top: 8px;
+  max-height: 220px;
+  overflow: auto;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+  .tahoe-organize-compare { grid-template-columns: 1fr; margin-inline-start: 0; }
+}
+
+.tahoe-organize-row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tahoe-organize-row-title {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tahoe-organize-row-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tahoe-organize-row-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tahoe-organize-row.is-ok,
+.tahoe-organize-row.is-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tahoe-organize-row.is-more {
+  justify-content: center;
+  color: var(--text-accent);
+  cursor: pointer;
+}
+
+.tahoe-organize-ok-icon { display: inline-flex; color: var(--color-green); }
+
+.tahoe-organize-chip {
+  height: 24px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* button…:not(.clickable-icon), to be as specific as themes' button styles */
+button.tahoe-organize-chip:not(.clickable-icon) {
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+}
+
+.tahoe-organize-chip.mod-accent {
+  color: var(--text-on-accent);
+  background: var(--interactive-accent);
+}
+
+.tahoe-organize-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.tahoe-organize-empty-icon {
+  color: var(--color-green);
+  --icon-size: 40px;
+  margin-bottom: 8px;
+}
+
+/* Diff */
+.tahoe-organize-diff {
+  margin: 10px 0 2px 36px;
+  padding: 8px 0;
+  border-radius: 10px;
+  background: var(--background-primary);
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  max-height: 360px;
+  overflow: auto;
+}
+
+.tahoe-organize-diff-line {
+  display: flex;
+  gap: 8px;
+  padding: 0 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tahoe-organize-diff-line.is-add { background: color-mix(in srgb, var(--color-green) 16%, transparent); }
+.tahoe-organize-diff-line.is-del { background: color-mix(in srgb, var(--color-red) 14%, transparent); }
+.tahoe-organize-diff-sign { width: 10px; color: var(--text-faint); flex-shrink: 0; }
+.tahoe-organize-diff-gap { padding: 0 10px; color: var(--text-faint); }
+.tahoe-organize-diff-legend { padding: 6px 10px 0; color: var(--text-faint); font-family: var(--font-interface); font-size: 11px; }
+
+.tahoe-organize-sublist {
+  margin: 8px 0 2px 36px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: var(--background-primary);
+}
+
+.tahoe-organize-sublist-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  padding: 2px 0 4px;
+}
+
+.tahoe-organize-subrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12.5px;
+}
+
+.tahoe-organize-subrow > span:nth-child(2) { flex: 1; }
+.tahoe-organize-subrow-icon { display: inline-flex; color: var(--text-muted); --icon-size: 14px; }
+.tahoe-organize-subrow-kind { color: var(--text-muted); font-size: 11.5px; }
+
+/* ---- Inbox triage ---- */
+.tahoe-triage {
+  width: min(720px, 94vw);
+  height: min(760px, 88vh);
+}
+
+.tahoe-triage .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+.tahoe-triage-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--tahoe-radius-card, 12px);
+  background: var(--background-primary);
+  box-shadow: inset 0 0 0 0.5px var(--background-modifier-border);
+  overflow: hidden;
+}
+
+.tahoe-triage-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 12px 10px 18px;
+  box-shadow: inset 0 -0.5px 0 var(--background-modifier-border);
+}
+
+.tahoe-triage-info { flex: 1; min-width: 0; }
+
+.tahoe-triage-step { display: flex; gap: 2px; }
+
+.tahoe-triage-step .clickable-icon.is-disabled { opacity: 0.3; pointer-events: none; }
+
+.tahoe-triage-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.tahoe-triage-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Suggestion from Tahoe Intelligence: folder, tags, title — Tab accepts */
+.tahoe-triage-suggest {
+  --tahoe-ai: linear-gradient(135deg, #0a84ff 0%, #bf5af2 42%, #ff375f 74%, #ff9f0a 100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 18px;
+  background: color-mix(in srgb, #bf5af2 5%, var(--background-primary));
+  box-shadow: inset 0 -0.5px 0 var(--tahoe-separator, var(--background-modifier-border));
+  animation: tahoe-triage-fade 0.3s ease-out;
+}
+
+.tahoe-triage-suggest.is-thinking {
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.tahoe-triage-suggest.is-thinking .tahoe-triage-ai-icon {
+  animation: tahoe-triage-pulse 1.2s ease-in-out infinite;
+}
+
+.tahoe-triage-ai-icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  background: var(--tahoe-ai);
+  -webkit-mask: var(--tahoe-ai-glyph) center / contain no-repeat;
+  mask: var(--tahoe-ai-glyph) center / contain no-repeat;
+}
+
+.tahoe-triage-ai-icon > svg { display: none; }
+
+.tahoe-triage-chips {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+button.tahoe-triage-chip:not(.clickable-icon) {
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+button.tahoe-triage-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  max-width: 100%;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--tahoe-separator, var(--background-modifier-border));
+  text-decoration: line-through;
+}
+
+button.tahoe-triage-chip > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button.tahoe-triage-chip.is-on {
+  color: var(--text-accent);
+  background: color-mix(in srgb, var(--interactive-accent) 13%, transparent);
+  box-shadow: none;
+  text-decoration: none;
+}
+
+.tahoe-triage-chip-icon { display: inline-flex; --icon-size: 12px; --icon-stroke: 2.2px; }
+
+button.tahoe-triage-accept {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+}
+
+button.tahoe-triage-accept:not(.clickable-icon) {
+  padding: 0 8px 0 12px;
+  font-size: 12.5px;
+}
+
+button.tahoe-triage-accept kbd {
+  font-size: 10.5px;
+  padding: 0 5px;
+  border-radius: 4px;
+  color: var(--text-on-accent);
+  background: rgb(255 255 255 / 0.2);
+}
+
+.is-mobile button.tahoe-triage-accept kbd { display: none; }
+
+@keyframes tahoe-triage-fade { from { opacity: 0; } }
+@keyframes tahoe-triage-pulse { 50% { opacity: 0.45; } }
+
+.tahoe-triage-body {
+  flex: 1;
+  overflow: auto;
+  padding: 6px 18px 18px;
+  font-size: 14px;
+}
+
+.tahoe-triage-blank { color: var(--text-faint); padding-top: 10px; }
+
+.tahoe-triage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.tahoe-triage-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+}
+
+button.tahoe-triage-action:not(.clickable-icon) {
+  padding: 0 10px 0 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+}
+
+.tahoe-triage-action-icon { display: inline-flex; --icon-size: 14px; }
+
+.tahoe-triage-action kbd {
+  font-size: 10.5px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--background-modifier-hover);
+  color: var(--text-muted);
+}
+
+.tahoe-triage-action.mod-accent {
+  color: var(--text-on-accent);
+  background: var(--interactive-accent);
+}
+
+.tahoe-triage-action.mod-accent kbd {
+  color: var(--text-on-accent);
+  background: rgb(255 255 255 / 0.2);
+}
+
+.tahoe-triage-action.mod-danger .tahoe-triage-action-icon { color: var(--color-red); }
+
+/* iPhone: a full-height sheet with an iOS-style grid of icon-over-label buttons. */
+.is-mobile .tahoe-triage-action kbd { display: none; }
+
+.is-phone .tahoe-triage {
+  width: 100%;
+  height: 100%; /* up to Obsidian's sheet max-height */
+  align-self: flex-end;
+}
+
+.is-phone .tahoe-triage .modal-content { padding-bottom: var(--safe-area-inset-bottom, 0px); }
+
+.is-phone .tahoe-triage-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.is-phone .tahoe-triage-action {
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  height: 58px;
+}
+
+.is-phone button.tahoe-triage-action:not(.clickable-icon) {
+  padding: 0;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.is-phone .tahoe-triage-action-icon { --icon-size: 19px; }
+
+.is-phone .tahoe-triage-action.mod-undo {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  height: 40px;
+}
+
+.tahoe-triage-nav {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.tahoe-triage-empty {
+  margin: auto;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.tahoe-triage-empty-icon {
+  --icon-size: 44px;
+  color: var(--color-green);
+  margin-bottom: 10px;
+}
+
+.tahoe-triage-empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-normal);
+}
+
+.tahoe-triage-empty-desc { margin-top: 4px; font-size: 13px; }
+
+/* ---- Smart folders ---- */
+/* The same as the file explorer list; the second selector is as specific as
+   the Tahoe theme's padding for sidebar panes. */
+.workspace-leaf-content > .view-content.tahoe-smart-folders,
+body:not(.is-mobile) .mod-sidedock .workspace-leaf-content > .view-content.tahoe-smart-folders {
+  padding: 4px 12px 24px;
+}
+
+.tahoe-smart-header {
+  display: flex;
+  align-items: center;
+  padding: 4px 4px 8px 6px;
+}
+
+.tahoe-smart-header-title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
+/* Rows use the file explorer's tree classes, so the theme styles them like
+   the file list. Only the smart folder header needs its own bits. */
+.nav-files-container.tahoe-smart-tree {
+  padding: 0;
+  overflow: visible;
+}
+
+.tahoe-smart-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.tahoe-smart-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--interactive-accent);
+  --icon-size: 16px;
+  --icon-stroke: 1.9px;
+}
+
+.tahoe-smart-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Inactive window: the colored icons step back, like the sidebar's */
+body:not(.is-mobile):not(.is-focused) .tahoe-smart-icon {
+  color: var(--tahoe-label-3, var(--text-faint));
+}
+
+.tahoe-smart-tree .nav-file-title .tree-item-flair {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.tahoe-smart-none {
+  padding: 4px 10px 4px 26px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.tahoe-smart-modal { width: min(640px, 94vw); }
+
+/* Inset-grouped cards on a sheet, as in System Settings' sheets */
+.tahoe-organize-form,
+.tahoe-smart-rules {
+  border-radius: 12px;
+  background: var(--tahoe-card, var(--background-primary));
+  box-shadow: 0 0 0 0.5px var(--tahoe-organize-line);
+}
+
+.tahoe-organize-form {
+  padding: 0 14px;
+  margin: 4px 0 16px;
+}
+
+/* Beat Obsidian's own .setting-item spacing and dividers inside the card */
+.tahoe-organize-form > .setting-item.setting-item {
+  align-items: center;
+  margin: 0;
+  padding: 10px 0;
+  border: none;
+}
+
+.tahoe-organize-form > .setting-item + .setting-item {
+  box-shadow: inset 0 0.5px 0 var(--tahoe-organize-line);
+}
+
+.tahoe-organize-form .setting-item-description:empty {
+  display: none;
+}
+
+.tahoe-smart-match {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tahoe-smart-rules {
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 0 12px;
+}
+
+.tahoe-smart-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.tahoe-smart-rule + .tahoe-smart-rule,
+.tahoe-smart-rule + .tahoe-smart-add-rule {
+  box-shadow: inset 0 0.5px 0 var(--tahoe-organize-line);
+}
+
+.tahoe-smart-value { flex: 1; min-width: 0; }
+
+.tahoe-smart-rule .clickable-icon { color: var(--text-faint); }
+.tahoe-smart-rule .clickable-icon:hover { color: var(--color-red); }
+
+.tahoe-smart-add-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 0 10px;
+  font-size: 13px;
+  color: var(--text-accent);
+  cursor: pointer;
+  --icon-size: 15px;
+}
+
+.tahoe-smart-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.tahoe-smart-preview {
+  flex: 1;
+  padding-inline-start: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tahoe-smart-footer .modal-button-container {
+  margin-top: 0;
+}
+
+/* ---- Alerts — macOS Golden Gate ---- */
+.modal.tahoe-organize-alert {
+  width: 300px;
+  padding: 20px 20px 18px;
+}
+
+/* Alerts have no close button or title bar */
+.modal.tahoe-organize-alert > :is(.modal-close-button, .modal-header-button, .modal-header) {
+  display: none;
+}
+
+.tahoe-organize-alert .modal-content {
+  margin: 0;
+}
+
+.tahoe-organize-alert-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  --tahoe-tile: var(--interactive-accent);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--tahoe-tile) 72%, #ffffff), var(--tahoe-tile));
+  box-shadow: inset 0 0 0 0.5px var(--tahoe-tile-edge, rgb(0 0 0 / 0.08)), 0 1px 3px rgb(0 0 0 / 0.16);
+  --icon-size: 26px;
+  --icon-stroke: 2px;
+}
+
+.tahoe-organize-alert.is-warning .tahoe-organize-alert-icon {
+  --tahoe-tile: #ff3b30;
+}
+
+.tahoe-organize-alert-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-normal);
+}
+
+.tahoe-organize-alert-message {
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.tahoe-organize-alert-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.tahoe-organize-alert-buttons > button {
+  flex: 1;
+  height: 30px;
+  margin: 0;
+}
+
+/* iPhone: a centered iOS alert, not a bottom sheet */
+.is-mobile .modal.tahoe-organize-alert {
+  width: min(300px, 86vw);
+  height: auto;
+  min-height: 0;
+  align-self: center;
+  margin: auto;
+  padding: 22px 18px 16px;
+  border-radius: 28px;
+  text-align: center;
+}
+
+.is-mobile .tahoe-organize-alert-icon {
+  margin: 0 auto 12px;
+}
+
+.is-mobile .tahoe-organize-alert-title {
+  font-size: 17px;
+}
+
+.is-mobile .tahoe-organize-alert-message {
+  font-size: 14px;
+}
+
+.is-mobile .modal.tahoe-organize-alert .modal-content {
+  padding-bottom: 0;
+}
+
+/* Side by side, Cancel first — Obsidian stacks dialog buttons on phones */
+.is-mobile .modal.tahoe-organize-alert .modal-button-container.tahoe-organize-alert-buttons {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+.is-mobile .modal.tahoe-organize-alert .tahoe-organize-alert-buttons > button {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0 8px;
+  font-size: 15px;
+}
+
+/* ---- Colored tags ---- */
+/* Each dot is ringed in the color behind it, like Finder: the sidebar,
+   a hovered or selected row, or the accent when the selection is filled. */
+.nav-file-title {
+  --tahoe-tag-ring: var(--tahoe-panel, var(--background-secondary));
+}
+
+.nav-file-title:hover {
+  --tahoe-tag-ring: color-mix(in srgb, var(--tahoe-panel, var(--background-secondary)), rgb(120 120 128) 8%);
+}
+
+.nav-file-title.is-active {
+  --tahoe-tag-ring: color-mix(in srgb, var(--tahoe-panel, var(--background-secondary)), rgb(120 120 128) 16%);
+}
+
+body.is-focused:not(.is-mobile) .mod-sidedock .workspace-leaf.mod-active .nav-file-title.is-active {
+  --tahoe-tag-ring: var(--interactive-accent);
+}
+
+/* ---- Link suggestions ---- */
+.tahoe-link-suggestion {
+  text-decoration: underline dotted color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.12s;
+}
+
+.tahoe-link-suggestion:hover {
+  background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+}
+
+/* ---- Image text search ---- */
+.suggestion-item.tahoe-ocr-result {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.tahoe-ocr-thumb {
+  flex: 0 0 56px;
+  height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--background-modifier-hover);
+}
+
+.tahoe-ocr-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tahoe-ocr-text { min-width: 0; }
+
+.tahoe-ocr-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tahoe-ocr-snippet {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.suggestion-item.is-selected .tahoe-ocr-snippet { color: inherit; opacity: 0.85; }
+
+.tahoe-ocr-snippet mark {
+  background: none;
+  color: var(--text-normal);
+  font-weight: 600;
+}
+
+.suggestion-item.is-selected .tahoe-ocr-snippet mark { color: inherit; }
+
+.tahoe-ocr-status { color: var(--text-muted); }
+
+@media (max-width: 600px) {
+  .tahoe-organize-stats { grid-template-columns: repeat(2, 1fr); }
+  .tahoe-organize-row-line { flex-wrap: wrap; }
+  .tahoe-organize-row-actions { width: 100%; justify-content: flex-end; }
+  /* A lone button fits beside the text. */
+  .tahoe-organize-row-line.has-single-action { flex-wrap: nowrap; }
+  .tahoe-organize-row-line > .tahoe-organize-row-actions.is-single { width: auto; }
+  /* Bulk actions go under the section title instead of squeezing it. */
+  .tahoe-organize-section-header { flex-wrap: wrap; }
+  .tahoe-organize-section-header.has-button > .tahoe-organize-section-text { flex-basis: 100%; }
+}
+
+.tahoe-smart-none.is-finding { animation: tahoe-triage-pulse 1.4s ease-in-out infinite; }
+
+/* ---- Literature notes ---- */
+.tahoe-literature-input { width: 100%; }
