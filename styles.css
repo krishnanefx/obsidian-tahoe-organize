@@ -930,10 +930,14 @@ body.is-focused:not(.is-mobile) .mod-sidedock .workspace-leaf.mod-active .nav-fi
 }
 
 /* ---- Link suggestions ---- */
+/* A dotted underline, drawn with a gradient (text-decoration styling is only
+   partly supported by WebKit on iPhone). */
 .tahoe-link-suggestion {
-  text-decoration: underline dotted color-mix(in srgb, var(--interactive-accent) 70%, transparent);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--interactive-accent) 70%, transparent) 0.8px, transparent 1.1px);
+  background-size: 4px 3px;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  padding-bottom: 2px;
   cursor: pointer;
   border-radius: 3px;
   transition: background-color 0.12s;
