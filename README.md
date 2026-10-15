@@ -36,11 +36,11 @@ Tahoe is a set of plugins and a theme that work on their own and fit together.
 | **[Tahoe Code](https://github.com/krishnanefx/obsidian-tahoe-code)** | An IDE in your code blocks: suggestions, checking as you type, quick fixes, go to definition, formatting and AI edits. | available |
 | **Tahoe Glass** | Real refraction for the Tahoe theme's glass, and System Settings–style settings pages. | coming soon |
 | **Tahoe Organize** | Keep a growing vault tidy: inbox triage, smart folders, colored tags, link suggestions, vault health, literature notes and text from images. | this one |
-| **Tahoe Intelligence** | On-device AI for your notes: ask your notes, related notes, distilling permanent notes and more. | coming soon |
+| **[Tahoe Intelligence](https://github.com/krishnanefx/obsidian-tahoe-intelligence)** | On-device AI for your notes: ask your notes, related notes, distilling permanent notes and more. | available |
 
 **Better together**
 
-- **With Tahoe Intelligence (coming soon):** inbox triage suggests a folder, tags and a better title for each note (Tab takes them), smart folders can match what a note is about, and vault health finds notes that say the same thing.
+- **With [Tahoe Intelligence](https://github.com/krishnanefx/obsidian-tahoe-intelligence):** inbox triage suggests a folder, tags and a better title for each note (Tab takes them), smart folders can match what a note is about, and vault health finds notes that say the same thing.
 - **With [Tahoe](https://github.com/krishnanefx/obsidian-tahoe-theme):** the tool pages take the theme's settings-style cards and grouped rows, and clear its floating toolbar.
 <!-- /tahoe-family -->
 
