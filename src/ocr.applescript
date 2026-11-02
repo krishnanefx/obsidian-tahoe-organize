@@ -1,4 +1,4 @@
--- Tahoe Organize: read the text in an image with macOS Vision (the engine behind Live Text).
+-- Tahoe Organize and Tahoe OCR: read the text in an image with macOS Vision (the engine behind Live Text).
 use AppleScript version "2.7"
 use framework "Foundation"
 use framework "Vision"

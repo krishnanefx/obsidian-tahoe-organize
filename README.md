@@ -44,6 +44,10 @@ Tahoe is a set of plugins and a theme that work on their own and fit together.
 - **With [Tahoe](https://github.com/krishnanefx/obsidian-tahoe-theme):** the tool pages take the theme's settings-style cards and grouped rows, and clear its floating toolbar.
 <!-- /tahoe-family -->
 
+## Feedback
+
+Questions are welcome in [Discussions](https://github.com/krishnanefx/obsidian-tahoe-organize/discussions), and bugs and ideas in [Issues](https://github.com/krishnanefx/obsidian-tahoe-organize/issues/new/choose). If Tahoe Organize is useful to you, a star helps others find it.
+
 ## Disclosures
 
 - **Network use:** only when you make a literature note. Its details come from export.arxiv.org and arxiv.org (for arXiv links), or api.crossref.org, doi.org and api.semanticscholar.org (for DOIs), and the PDF from arXiv or the open-access copy Semantic Scholar lists. Nothing else is sent anywhere.

@@ -1,4 +1,4 @@
-// Tahoe Organize helper: reads the text in images with macOS Vision (the engine behind Live Text).
+// Tahoe Organize and Tahoe OCR helper: reads the text in images with macOS Vision (the engine behind Live Text).
 // One image path per line on stdin; one JSON object per line on stdout: {"path","text","error"}.
 import Foundation
 import Vision

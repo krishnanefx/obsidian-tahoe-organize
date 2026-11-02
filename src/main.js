@@ -289,5 +289,6 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
       .addText((t) => t.setPlaceholder("Image Text Index.md").setValue(s.ocrIndexNote).onChange(async (v) => ((s.ocrIndexNote = v.trim() || "Image Text Index.md"), await save())));
     const count = Object.keys(this.plugin.ocr.entries).length;
     new Setting(containerEl).setName("Images read").setDesc(`${count.toLocaleString()} images so far.`);
+    containerEl.createDiv({ cls: "tahoe-source-link" }).createEl("a", { text: "Source, issues and ideas on GitHub", href: "https://github.com/krishnanefx/obsidian-tahoe-organize" });
   }
 }

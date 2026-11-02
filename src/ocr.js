@@ -1,5 +1,6 @@
 /*
- * Text from images: reads the words in screenshots, photos of slides and
+ * Text from images (shared by Tahoe Organize and Tahoe OCR; tests/unit keeps the
+ * two copies identical): reads the words in screenshots, photos of slides and
  * scanned pages with macOS Vision (the engine behind Live Text), so search
  * can find them.
  *
@@ -173,7 +174,7 @@ class OcrIndex {
   async ensureHelper() {
     if (this.helper && this.helper.exitCode === null) return this.helper;
     if (this.helperFailed) return null;
-    const dir = path.join(os.homedir(), "Library", "Caches", "tahoe-organize");
+    const dir = path.join(os.homedir(), "Library", "Caches", this.plugin.manifest.id);
     const bin = path.join(dir, "tahoe-ocr-v1");
     if (!fs.existsSync(bin)) {
       // Without Xcode's command line tools, xcrun would ask to install them;
@@ -253,7 +254,7 @@ class OcrIndex {
       "---",
       "# Text in images",
       "",
-      "_Written by Tahoe Organize so search can find words inside your screenshots and slides. It's rewritten automatically — edit the images' notes instead._",
+      `_Written by ${this.plugin.manifest.name} so search can find words inside your screenshots and slides. It's rewritten automatically — edit the images' notes instead._`,
       "",
     ];
     for (const p of paths) {
