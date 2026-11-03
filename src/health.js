@@ -27,7 +27,22 @@ async function analyseVault(app, settings) {
   for (const f of files.filter((x) => x.extension === "canvas")) {
     try {
       const data = JSON.parse(await app.vault.cachedRead(f));
-      for (const node of data.nodes || []) if (node.file) incoming.set(node.file, (incoming.get(node.file) || 0) + 1);
+      for (const node of data.nodes || []) {
+        if (node.file) incoming.set(node.file, (incoming.get(node.file) || 0) + 1);
+        // A text card can embed an attachment too: ![[photo.png]] or ![](photo.png)
+        if (typeof node.text === "string") {
+          for (const m of node.text.matchAll(/!?\[\[([^\]|#]+)[^\]]*\]\]|!?\[[^\]]*\]\(([^)\s]+)/g)) {
+            let name = m[1] || m[2];
+            try {
+              name = decodeURI(name);
+            } catch {
+              // not encoded
+            }
+            const dest = app.metadataCache.getFirstLinkpathDest(name.trim(), f.path);
+            if (dest) incoming.set(dest.path, (incoming.get(dest.path) || 0) + 1);
+          }
+        }
+      }
     } catch {
       // not a canvas we can read
     }

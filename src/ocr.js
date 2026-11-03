@@ -260,7 +260,7 @@ class OcrIndex {
     for (const p of paths) {
       const f = this.app.vault.getAbstractFileByPath(p);
       if (!(f instanceof TFile)) continue;
-      parts.push(`## ${this.app.fileManager.generateMarkdownLink(f, s.ocrIndexNote)}`, "", this.entries[p].text.replace(/^#/gm, "\\#").replace(/\n/g, "  \n"), "");
+      parts.push(`## ${this.app.fileManager.generateMarkdownLink(f, s.ocrIndexNote)}`, "", escapeForNote(this.entries[p].text).replace(/\n/g, "  \n"), "");
     }
     const content = parts.join("\n");
     const existing = this.app.vault.getAbstractFileByPath(s.ocrIndexNote);
@@ -362,4 +362,9 @@ class ImageTextSearchModal extends SuggestModal {
   }
 }
 
-export { OcrIndex, ImageTextSearchModal };
+// Text read from an image is shown as it was, not taken for Markdown: no headings, tags, links or embeds.
+function escapeForNote(text) {
+  return text.replace(/^#/gm, "\\#").replace(/(?<![\w\\])#(?=[\p{L}\p{N}_/-])/gu, "\\#").replace(/\[\[/g, "\\[[");
+}
+
+export { OcrIndex, ImageTextSearchModal, escapeForNote };
