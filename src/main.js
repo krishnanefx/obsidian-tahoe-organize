@@ -7,7 +7,7 @@
  * Everything that removes something moves it to the Trash.
  */
 
-import { Plugin, PluginSettingTab, Setting, Notice, Platform } from "obsidian";
+import { Plugin, PluginSettingTab, Setting, Notice, Platform, TFile } from "obsidian";
 import { ConflictsView, VIEW_CONFLICTS } from "./conflicts";
 import { HealthView, VIEW_HEALTH } from "./health";
 import { TriageModal, triageFolders } from "./triage";
@@ -15,7 +15,8 @@ import { SmartFoldersView, VIEW_SMART, DEFAULT_SMART_FOLDERS } from "./smartfold
 import { TagColors, DEFAULT_TAG_COLORS } from "./tagcolors";
 import { TitleIndex, suggestionsPlugin, linkAll } from "./linksuggest";
 import { OcrIndex, ImageTextSearchModal } from "./ocr";
-import { isImage } from "./util";
+import { isImage, moveFile } from "./util";
+import { inFolders } from "./rules";
 import { LiteratureModal, isBareRef } from "./literature";
 import { findFolder } from "./triage";
 import { loadNode } from "./node";
@@ -57,6 +58,16 @@ export default class TahoeOrganizePlugin extends Plugin {
     if (f.triage) {
       this.addRibbonIcon("inbox", "Triage inbox", () => new TriageModal(this).open());
       this.addCommand({ id: "triage-inbox", name: "Triage inbox", callback: () => new TriageModal(this).open() });
+      this.addCommand({
+        id: "archive-note",
+        name: "Archive this note",
+        checkCallback: (checking) => {
+          const file = this.app.workspace.getActiveFile();
+          if (!(file instanceof TFile) || file.extension !== "md") return false;
+          if (!checking) this.archiveNote(file);
+          return true;
+        },
+      });
     }
 
     // Smart folders
@@ -180,6 +191,14 @@ export default class TahoeOrganizePlugin extends Plugin {
   openConflicts() {
     return this.activate(VIEW_CONFLICTS, "tab");
   }
+
+  async archiveNote(file) {
+    const archive = triageFolders(this.app, this.settings).archive;
+    if (inFolders(file.path, [archive])) return new Notice("This note is already in the archive");
+    const r = await moveFile(this.app, file, archive);
+    new Notice(`Archived → ${r.to.replace(/\.md$/, "")}`, 2500);
+  }
+
 };
 
 class TahoeOrganizeSettingTab extends PluginSettingTab {

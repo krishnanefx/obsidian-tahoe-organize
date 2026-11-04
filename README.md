@@ -2,6 +2,8 @@
 
 **Keep a growing vault tidy.** Go through your inbox one note at a time with single keys, keep saved searches in the sidebar, color notes by tag, link the notes you mention, find broken links and unused attachments, fix iCloud's duplicate copies, make literature notes from arXiv and DOI links, and search the text in your screenshots. Each tool can be switched off, and anything removed goes to the trash.
 
+**Install:** in Obsidian, open Settings → Community plugins → Browse, search for “Tahoe Organize”, then Install and Enable. ([Directory page](https://community.obsidian.md/plugins/tahoe-organize))
+
 ![Inbox triage: archive with A, move with M, promote with P](images/triage-demo.png)
 
 - **A** archives the note, **M** moves it (type a few letters of the folder), **P** promotes it to your permanent notes, and **U** undoes.
