@@ -9,6 +9,7 @@
 
 import { Modal, MarkdownRenderer, Component, TFile, TFolder, setIcon, normalizePath } from "obsidian";
 import { FolderSuggestModal, NoteSuggestModal, moveFile, today, notice } from "./util";
+import { inFolders } from "./rules";
 
 function findFolder(app, pattern, within = null) {
   const folders = app.vault.getAllLoadedFiles().filter((f) => f instanceof TFolder && !f.isRoot() && pattern.test(f.name));
@@ -26,15 +27,20 @@ function triageFolders(app, settings) {
   return { inbox, promote, archive };
 }
 
+// The notes waiting in the inbox, oldest first, minus the folders left out of triage.
+function inboxNotes(app, settings, inbox) {
+  return app.vault
+    .getMarkdownFiles()
+    .filter((f) => inbox && (f.parent ? f.parent.path : "") === inbox && !inFolders(f.path, settings.triageExclude))
+    .sort((a, b) => a.stat.ctime - b.stat.ctime);
+}
+
 class TriageModal extends Modal {
   constructor(plugin) {
     super(plugin.app);
     this.plugin = plugin;
     this.folders = triageFolders(this.app, plugin.settings);
-    this.files = this.app.vault
-      .getMarkdownFiles()
-      .filter((f) => this.folders.inbox && (f.parent ? f.parent.path : "") === this.folders.inbox)
-      .sort((a, b) => a.stat.ctime - b.stat.ctime);
+    this.files = inboxNotes(this.app, plugin.settings, this.folders.inbox);
     this.index = 0;
     this.done = 0;
     this.history = [];

@@ -33,6 +33,7 @@ const DEFAULT_SETTINGS = {
   linkIgnore: [],
   hugeAttachmentMB: 10,
   healthExclude: [],
+  triageExclude: [],
   ocrWriteNote: false,
   ocrIndexNote: "Image Text Index.md",
   topicCache: {},
@@ -241,6 +242,11 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
     folderSetting("inboxFolder", "Inbox folder", `Detected: ${guess.inbox || "none"}`);
     folderSetting("archiveFolder", "Archive to", "Where A sends a note. Created if it doesn’t exist.");
     folderSetting("promoteFolder", "Promote to", "Where P sends a note — your permanent notes.");
+
+    new Setting(containerEl)
+      .setName("Skip folders")
+      .setDesc("Folders inside the inbox to leave out of Triage, separated by commas.")
+      .addTextArea((t) => t.setValue((s.triageExclude || []).join(", ")).onChange(async (v) => ((s.triageExclude = v.split(",").map((x) => x.trim().replace(/\/$/, "")).filter(Boolean)), await save())));
 
     new Setting(containerEl).setName("Literature notes").setHeading();
     const litGuess = (findFolder(this.app, /literature|papers|references/i) || {}).path || "the vault's top level";
