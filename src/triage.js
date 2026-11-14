@@ -376,4 +376,4 @@ class TriageModal extends Modal {
   }
 }
 
-export { TriageModal, triageFolders, findFolder };
+export { TriageModal, triageFolders, findFolder, inboxNotes };

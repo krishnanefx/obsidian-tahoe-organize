@@ -10,7 +10,7 @@
 import { Plugin, PluginSettingTab, Setting, Notice, Platform, TFile } from "obsidian";
 import { ConflictsView, VIEW_CONFLICTS } from "./conflicts";
 import { HealthView, VIEW_HEALTH } from "./health";
-import { TriageModal, triageFolders } from "./triage";
+import { TriageModal, triageFolders, inboxNotes } from "./triage";
 import { SmartFoldersView, VIEW_SMART, DEFAULT_SMART_FOLDERS } from "./smartfolders";
 import { TagColors, DEFAULT_TAG_COLORS } from "./tagcolors";
 import { TitleIndex, suggestionsPlugin, linkAll } from "./linksuggest";
@@ -59,6 +59,7 @@ export default class TahoeOrganizePlugin extends Plugin {
     if (f.triage) {
       this.addRibbonIcon("inbox", "Triage inbox", () => new TriageModal(this).open());
       this.addCommand({ id: "triage-inbox", name: "Triage inbox", callback: () => new TriageModal(this).open() });
+      this.addCommand({ id: "random-inbox-note", name: "Open a random note from the inbox", callback: () => this.openRandomInboxNote() });
       this.addCommand({
         id: "archive-note",
         name: "Archive this note",
@@ -191,6 +192,13 @@ export default class TahoeOrganizePlugin extends Plugin {
 
   openConflicts() {
     return this.activate(VIEW_CONFLICTS, "tab");
+  }
+
+  openRandomInboxNote() {
+    const inbox = triageFolders(this.app, this.settings).inbox;
+    const notes = inboxNotes(this.app, this.settings, inbox);
+    if (!notes.length) return new Notice(inbox ? `Nothing in ${inbox}` : "Choose your inbox folder in Settings → Tahoe Organize");
+    return this.app.workspace.getLeaf(false).openFile(notes[Math.floor(Math.random() * notes.length)]);
   }
 
   async archiveNote(file) {
