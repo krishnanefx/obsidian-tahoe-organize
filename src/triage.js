@@ -41,6 +41,8 @@ class TriageModal extends Modal {
     this.plugin = plugin;
     this.folders = triageFolders(this.app, plugin.settings);
     this.files = inboxNotes(this.app, plugin.settings, this.folders.inbox);
+    const batch = Number(plugin.settings.triageBatch) || 0;
+    if (batch > 0) this.files = this.files.slice(0, batch);
     this.index = 0;
     this.done = 0;
     this.history = [];

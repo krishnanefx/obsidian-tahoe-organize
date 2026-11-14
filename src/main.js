@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS = {
   hugeAttachmentMB: 10,
   healthExclude: [],
   triageExclude: [],
+  triageBatch: 0,
   ocrWriteNote: false,
   ocrIndexNote: "Image Text Index.md",
   topicCache: {},
@@ -251,6 +252,14 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
     folderSetting("archiveFolder", "Archive to", "Where A sends a note. Created if it doesn’t exist.");
     folderSetting("promoteFolder", "Promote to", "Where P sends a note — your permanent notes.");
 
+    new Setting(containerEl)
+      .setName("Notes per session")
+      .setDesc("How many inbox notes Triage shows at a time.")
+      .addDropdown((d) => {
+        d.addOption("0", "All of them");
+        for (const v of ["10", "20", "50"]) d.addOption(v, `${v} notes`);
+        d.setValue(String(s.triageBatch || 0)).onChange(async (v) => ((s.triageBatch = Number(v)), await save()));
+      });
     new Setting(containerEl)
       .setName("Skip folders")
       .setDesc("Folders inside the inbox to leave out of Triage, separated by commas.")
