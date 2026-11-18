@@ -31,6 +31,7 @@ const DEFAULT_SETTINGS = {
   colorProperty: "color",
   linkMinLength: 4,
   linkIgnore: [],
+  linkIgnoreFolders: [],
   hugeAttachmentMB: 10,
   healthExclude: [],
   triageExclude: [],
@@ -308,6 +309,11 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
       .setName("Never suggest")
       .setDesc("Note titles to ignore, separated by commas.")
       .addTextArea((t) => t.setValue((s.linkIgnore || []).join(", ")).onChange(async (v) => ((s.linkIgnore = v.split(",").map((x) => x.trim()).filter(Boolean)), await save())));
+
+    new Setting(containerEl)
+      .setName("Never suggest from folders")
+      .setDesc("Notes in these folders aren’t offered as links — for example Templates. Separated by commas.")
+      .addTextArea((t) => t.setValue((s.linkIgnoreFolders || []).join(", ")).onChange(async (v) => ((s.linkIgnoreFolders = v.split(",").map((x) => x.trim().replace(/\/$/, "")).filter(Boolean)), await save())));
 
     new Setting(containerEl).setName("Vault health").setHeading();
     new Setting(containerEl)

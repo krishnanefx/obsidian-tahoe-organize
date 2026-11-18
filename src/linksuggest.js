@@ -10,6 +10,7 @@ import { ViewPlugin, Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { debounce, ignored } from "./util";
+import { inFolders } from "./rules";
 
 const WORD = /[\p{L}\p{N}][\p{L}\p{N}'’_-]*/gu;
 const SKIP_NODE = /code|link|url|frontmatter|hashtag|math|comment|escape|html|hmd-internal|footref|formatting-header/i;
@@ -29,7 +30,7 @@ class TitleIndex {
     const map = new Map();
     for (const file of this.plugin.app.vault.getMarkdownFiles()) {
       const title = file.basename;
-      if (title.length < min || ignore.has(title.toLowerCase()) || file.path === s.ocrIndexNote || ignored(this.plugin.app, file.path)) continue;
+      if (title.length < min || ignore.has(title.toLowerCase()) || file.path === s.ocrIndexNote || ignored(this.plugin.app, file.path) || inFolders(file.path, s.linkIgnoreFolders)) continue;
       if (/^untitled( \d+)?$/i.test(title)) continue;
       const words = title.match(WORD);
       if (!words) continue;
