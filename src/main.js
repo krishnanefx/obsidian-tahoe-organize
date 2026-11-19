@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS = {
   linkIgnoreFolders: [],
   hugeAttachmentMB: 10,
   healthExclude: [],
+  healthUntagged: false,
   triageExclude: [],
   triageBatch: 0,
   ocrWriteNote: false,
@@ -326,6 +327,11 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
       .setName("Skip folders")
       .setDesc("Folders to leave out of the health check, separated by commas — for example a clippings folder.")
       .addTextArea((t) => t.setValue((s.healthExclude || []).join(", ")).onChange(async (v) => ((s.healthExclude = v.split(",").map((x) => x.trim()).filter(Boolean)), await save())));
+
+    new Setting(containerEl)
+      .setName("Notes without tags")
+      .setDesc("List notes that have no tag in the text or the properties.")
+      .addToggle((t) => t.setValue(!!s.healthUntagged).onChange(async (v) => ((s.healthUntagged = v), await save())));
 
     new Setting(containerEl).setName("Text from images").setHeading();
     new Setting(containerEl)

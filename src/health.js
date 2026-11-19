@@ -7,6 +7,7 @@
 import { ItemView, Menu, TFile, setIcon, normalizePath, Platform } from "obsidian";
 import { moveToTrash, confirm, notice, formatBytes, similarity, escapeRegExp, ignored, markSingle } from "./util";
 import { scanConflicts } from "./conflicts";
+import { hasTags } from "./rules";
 
 const VIEW_HEALTH = "tahoe-vault-health";
 const SHOW = 40;
@@ -87,6 +88,11 @@ async function analyseVault(app, settings) {
     .filter((f) => !isExcluded(f.path) && !empty.includes(f) && !incoming.has(f.path) && linksOut(f.path) === 0)
     .sort((a, b) => b.stat.mtime - a.stat.mtime);
 
+  // Notes with no tag anywhere (off unless asked for).
+  const untagged = settings.healthUntagged
+    ? notes.filter((f) => !isExcluded(f.path) && !empty.includes(f) && !hasTags(app.metadataCache.getFileCache(f))).sort((a, b) => b.stat.mtime - a.stat.mtime)
+    : null;
+
   const attachments = files.filter((f) => f.extension !== "md" && f.extension !== "canvas" && f.extension !== "base");
   const unused = attachments.filter((f) => !isExcluded(f.path) && !incoming.has(f.path)).sort((a, b) => b.stat.size - a.stat.size);
   const limit = (Number(settings.hugeAttachmentMB) || 10) * 1e6;
@@ -101,7 +107,7 @@ async function analyseVault(app, settings) {
   }
 
   const totalSize = files.reduce((s, f) => s + f.stat.size, 0);
-  return { notes: notes.length, attachments: attachments.length, totalSize, broken: [...broken.values()].sort((a, b) => b.count - a.count), orphans, empty, unused, huge, conflicts };
+  return { notes: notes.length, attachments: attachments.length, totalSize, broken: [...broken.values()].sort((a, b) => b.count - a.count), orphans, empty, unused, huge, conflicts, untagged };
 }
 
 class HealthView extends ItemView {
@@ -258,6 +264,13 @@ class HealthView extends ItemView {
     this.group(el, "Orphan notes", "Notes with no links in or out — easy to lose track of.", r.orphans, (list, f) => {
       this.fileRow(list, f, "file-symlink", `Edited ${new Date(f.stat.mtime).toLocaleDateString()}`, { trash: false });
     });
+
+    // Notes without tags
+    if (r.untagged) {
+      this.group(el, "Notes without tags", "Notes with no tag in the text or the properties.", r.untagged, (list, f) => {
+        this.fileRow(list, f, "tag", `Edited ${new Date(f.stat.mtime).toLocaleDateString()}`, { trash: false });
+      });
+    }
   }
 
   duplicatesSection(el) {

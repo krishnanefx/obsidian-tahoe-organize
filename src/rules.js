@@ -8,4 +8,13 @@ function inFolders(path, folders) {
   });
 }
 
-export { inFolders };
+// Does the note have a tag, in its text or in its properties?
+function hasTags(cache) {
+  if (!cache) return false;
+  if (cache.tags && cache.tags.length) return true;
+  const t = cache.frontmatter && cache.frontmatter.tags;
+  if (Array.isArray(t)) return t.some((x) => String(x).trim());
+  return !!(t && String(t).trim());
+}
+
+export { inFolders, hasTags };
