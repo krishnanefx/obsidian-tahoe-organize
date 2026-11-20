@@ -7,7 +7,7 @@
 import { ItemView, Menu, TFile, setIcon, normalizePath, Platform } from "obsidian";
 import { moveToTrash, confirm, notice, formatBytes, similarity, escapeRegExp, ignored, markSingle } from "./util";
 import { scanConflicts } from "./conflicts";
-import { hasTags } from "./rules";
+import { hasTags, healthSummary } from "./rules";
 
 const VIEW_HEALTH = "tahoe-vault-health";
 const SHOW = 40;
@@ -482,4 +482,4 @@ class HealthView extends ItemView {
   }
 }
 
-export { HealthView, VIEW_HEALTH, analyseVault };
+export { HealthView, VIEW_HEALTH, analyseVault, healthSummary };

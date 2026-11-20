@@ -17,4 +17,21 @@ function hasTags(cache) {
   return !!(t && String(t).trim());
 }
 
-export { inFolders, hasTags };
+// A health report as plain Markdown, for the clipboard.
+function healthSummary(r, hugeMB) {
+  const lines = [
+    "# Vault health",
+    "",
+    `- ${r.notes} notes, ${r.attachments} attachments`,
+    `- ${r.broken.length} broken links`,
+    `- ${r.empty.length} empty notes`,
+    `- ${r.unused.length} unused attachments`,
+    `- ${r.huge.length} files over ${hugeMB} MB`,
+    `- ${r.orphans.length} orphan notes`,
+  ];
+  if (r.untagged) lines.push(`- ${r.untagged.length} notes without tags`);
+  if (r.conflicts) lines.push(`- ${r.conflicts} iCloud conflict copies`);
+  return lines.join("\n");
+}
+
+export { inFolders, hasTags, healthSummary };

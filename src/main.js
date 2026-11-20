@@ -9,7 +9,7 @@
 
 import { Plugin, PluginSettingTab, Setting, Notice, Platform, TFile } from "obsidian";
 import { ConflictsView, VIEW_CONFLICTS } from "./conflicts";
-import { HealthView, VIEW_HEALTH } from "./health";
+import { HealthView, VIEW_HEALTH, analyseVault, healthSummary } from "./health";
 import { TriageModal, triageFolders, inboxNotes } from "./triage";
 import { SmartFoldersView, VIEW_SMART, DEFAULT_SMART_FOLDERS } from "./smartfolders";
 import { TagColors, DEFAULT_TAG_COLORS } from "./tagcolors";
@@ -115,7 +115,10 @@ export default class TahoeOrganizePlugin extends Plugin {
     }
 
     // Vault health & iCloud conflicts
-    if (f.health) this.addCommand({ id: "vault-health", name: "Check vault health", callback: () => this.activate(VIEW_HEALTH, "tab") });
+    if (f.health) {
+      this.addCommand({ id: "vault-health", name: "Check vault health", callback: () => this.activate(VIEW_HEALTH, "tab") });
+      this.addCommand({ id: "copy-health-summary", name: "Copy a vault health summary", callback: () => this.copyHealthSummary() });
+    }
     if (f.conflicts) this.addCommand({ id: "icloud-conflicts", name: "Find iCloud conflicts", callback: () => this.openConflicts() });
 
     // Colored tags
@@ -211,6 +214,11 @@ export default class TahoeOrganizePlugin extends Plugin {
     new Notice(`Archived → ${r.to.replace(/\.md$/, "")}`, 2500);
   }
 
+  async copyHealthSummary() {
+    const r = await analyseVault(this.app, this.settings);
+    await navigator.clipboard.writeText(healthSummary(r, this.settings.hugeAttachmentMB));
+    new Notice("Vault health summary copied");
+  }
 };
 
 class TahoeOrganizeSettingTab extends PluginSettingTab {
