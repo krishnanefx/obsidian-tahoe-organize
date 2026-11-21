@@ -8,6 +8,11 @@ function inFolders(path, folders) {
   });
 }
 
+// Which side of an iCloud conflict is newer. A tie keeps the original.
+function newerSide(originalMtime, copyMtime) {
+  return copyMtime > originalMtime ? "copy" : "original";
+}
+
 // Does the note have a tag, in its text or in its properties?
 function hasTags(cache) {
   if (!cache) return false;
@@ -34,4 +39,4 @@ function healthSummary(r, hugeMB) {
   return lines.join("\n");
 }
 
-export { inFolders, hasTags, healthSummary };
+export { inFolders, newerSide, hasTags, healthSummary };

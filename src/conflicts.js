@@ -9,6 +9,7 @@
 
 import { ItemView, TFile, TFolder, setIcon, normalizePath } from "obsidian";
 import { moveToTrash, diffLines, mergeKeepingBoth, confirm, notice, formatBytes, markSingle } from "./util";
+import { newerSide } from "./rules";
 
 const VIEW_CONFLICTS = "tahoe-icloud-conflicts";
 const COPY_NAME = /^(.*) (\d{1,2})$/;
@@ -127,6 +128,40 @@ async function scanConflicts(app) {
   }
 
   return result;
+}
+
+// Settles every copy of a note or attachment in one go: identical copies go to
+// the Trash, and where the two differ the newer one is kept (the older one goes
+// to the Trash). Settings-folder copies and duplicate folders are left to the view.
+async function keepNewest(app) {
+  const r = await scanConflicts(app);
+  const same = r.identical.filter((x) => !x.hidden);
+  const differ = r.different.filter((x) => !x.hidden);
+  if (!same.length && !differ.length) return notice("No iCloud conflicts in your notes");
+  const ok = await confirm(app, {
+    title: "Keep the newest version of every conflict?",
+    message: `${same.length} identical ${same.length === 1 ? "copy" : "copies"} and ${differ.length} ${differ.length === 1 ? "copy that differs" : "copies that differ"}. For each, the older version moves to the Trash and the newer one stays. Settings folders and duplicate folders aren’t touched.`,
+    confirm: "Keep newest",
+    warning: false,
+    icon: "cloud",
+  });
+  if (!ok) return;
+  let done = 0;
+  for (const item of [...same, ...differ]) {
+    const copy = app.vault.getAbstractFileByPath(item.copy);
+    const original = app.vault.getAbstractFileByPath(item.original);
+    if (!(copy instanceof TFile) || !(original instanceof TFile)) continue;
+    if (same.includes(item) || newerSide(original.stat.mtime, copy.stat.mtime) === "original") {
+      await moveToTrash(app, copy);
+    } else {
+      // The copy is newer: the old original goes to the Trash and the copy takes its place.
+      const dest = original.path;
+      await moveToTrash(app, original);
+      await app.fileManager.renameFile(copy, dest);
+    }
+    done++;
+  }
+  notice(`Settled ${done} ${done === 1 ? "conflict" : "conflicts"}; the older versions are in the Trash`);
 }
 
 class ConflictsView extends ItemView {
@@ -366,4 +401,4 @@ class ConflictsView extends ItemView {
   }
 }
 
-export { ConflictsView, VIEW_CONFLICTS, scanConflicts, formatBytes };
+export { ConflictsView, VIEW_CONFLICTS, scanConflicts, keepNewest, formatBytes };

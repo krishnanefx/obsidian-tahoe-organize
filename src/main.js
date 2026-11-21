@@ -8,7 +8,7 @@
  */
 
 import { Plugin, PluginSettingTab, Setting, Notice, Platform, TFile } from "obsidian";
-import { ConflictsView, VIEW_CONFLICTS } from "./conflicts";
+import { ConflictsView, VIEW_CONFLICTS, keepNewest } from "./conflicts";
 import { HealthView, VIEW_HEALTH, analyseVault, healthSummary } from "./health";
 import { TriageModal, triageFolders, inboxNotes } from "./triage";
 import { SmartFoldersView, VIEW_SMART, DEFAULT_SMART_FOLDERS } from "./smartfolders";
@@ -119,7 +119,10 @@ export default class TahoeOrganizePlugin extends Plugin {
       this.addCommand({ id: "vault-health", name: "Check vault health", callback: () => this.activate(VIEW_HEALTH, "tab") });
       this.addCommand({ id: "copy-health-summary", name: "Copy a vault health summary", callback: () => this.copyHealthSummary() });
     }
-    if (f.conflicts) this.addCommand({ id: "icloud-conflicts", name: "Find iCloud conflicts", callback: () => this.openConflicts() });
+    if (f.conflicts) {
+      this.addCommand({ id: "icloud-conflicts", name: "Find iCloud conflicts", callback: () => this.openConflicts() });
+      this.addCommand({ id: "keep-newest-conflicts", name: "Settle iCloud conflicts by keeping the newest", callback: () => keepNewest(this.app) });
+    }
 
     // Colored tags
     this.tagColors = new TagColors(this);
