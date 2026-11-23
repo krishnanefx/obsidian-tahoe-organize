@@ -95,6 +95,7 @@ export default class TahoeOrganizePlugin extends Plugin {
     // Literature notes from arXiv / DOI links
     if (f.literature) {
       this.addCommand({ id: "new-literature-note", name: "New literature note from link…", callback: () => new LiteratureModal(this).open() });
+      this.addCommand({ id: "literature-from-clipboard", name: "New literature note from the copied link", callback: () => this.literatureFromClipboard() });
       // Pasting just a paper link: offer a note for it (the paste goes in as usual).
       this.registerEvent(
         this.app.workspace.on("editor-paste", (evt) => {
@@ -215,6 +216,17 @@ export default class TahoeOrganizePlugin extends Plugin {
     if (inFolders(file.path, [archive])) return new Notice("This note is already in the archive");
     const r = await moveFile(this.app, file, archive);
     new Notice(`Archived → ${r.to.replace(/\.md$/, "")}`, 2500);
+  }
+
+  async literatureFromClipboard() {
+    let text = "";
+    try {
+      text = (await navigator.clipboard.readText()).trim();
+    } catch {
+      // clipboard not readable: the dialog opens empty
+    }
+    if (!text || !isBareRef(text)) new Notice("The clipboard doesn't hold an arXiv or DOI link — paste one here");
+    new LiteratureModal(this, isBareRef(text) ? text : "").open();
   }
 
   async copyHealthSummary() {
