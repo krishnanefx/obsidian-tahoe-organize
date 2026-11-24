@@ -7,12 +7,12 @@
  * Everything that removes something moves it to the Trash.
  */
 
-import { Plugin, PluginSettingTab, Setting, Notice, Platform, TFile } from "obsidian";
+import { Plugin, PluginSettingTab, Setting, Notice, Platform, FuzzySuggestModal, TFile } from "obsidian";
 import { ConflictsView, VIEW_CONFLICTS, keepNewest } from "./conflicts";
 import { HealthView, VIEW_HEALTH, analyseVault, healthSummary } from "./health";
 import { TriageModal, triageFolders, inboxNotes } from "./triage";
 import { SmartFoldersView, VIEW_SMART, DEFAULT_SMART_FOLDERS } from "./smartfolders";
-import { TagColors, DEFAULT_TAG_COLORS } from "./tagcolors";
+import { TagColors, DEFAULT_TAG_COLORS, FINDER_COLORS } from "./tagcolors";
 import { TitleIndex, suggestionsPlugin, linkAll } from "./linksuggest";
 import { OcrIndex, ImageTextSearchModal } from "./ocr";
 import { isImage, moveFile } from "./util";
@@ -127,7 +127,19 @@ export default class TahoeOrganizePlugin extends Plugin {
 
     // Colored tags
     this.tagColors = new TagColors(this);
-    if (f.tagColors) this.app.workspace.onLayoutReady(() => this.tagColors.enable());
+    if (f.tagColors) {
+      this.app.workspace.onLayoutReady(() => this.tagColors.enable());
+      this.addCommand({
+        id: "set-note-color",
+        name: "Set this note's color",
+        checkCallback: (checking) => {
+          const file = this.app.workspace.getActiveFile();
+          if (!(file instanceof TFile) || file.extension !== "md") return false;
+          if (!checking) new ColorModal(this.app, (c) => this.setNoteColor(file, c)).open();
+          return true;
+        },
+      });
+    }
 
     // Live link suggestions
     this.titles = new TitleIndex(this);
@@ -218,6 +230,14 @@ export default class TahoeOrganizePlugin extends Plugin {
     new Notice(`Archived → ${r.to.replace(/\.md$/, "")}`, 2500);
   }
 
+  async setNoteColor(file, color) {
+    const prop = this.settings.colorProperty || "color";
+    await this.app.fileManager.processFrontMatter(file, (fm) => {
+      if (color) fm[prop] = color;
+      else delete fm[prop];
+    });
+  }
+
   async literatureFromClipboard() {
     let text = "";
     try {
@@ -235,6 +255,27 @@ export default class TahoeOrganizePlugin extends Plugin {
     new Notice("Vault health summary copied");
   }
 };
+
+// Picks a color for the active note.
+class ColorModal extends FuzzySuggestModal {
+  constructor(app, onChoose) {
+    super(app);
+    this.onChoose = onChoose;
+    this.setPlaceholder("Color for this note…");
+  }
+
+  getItems() {
+    return [...Object.keys(FINDER_COLORS), ""];
+  }
+
+  getItemText(c) {
+    return c ? c[0].toUpperCase() + c.slice(1) : "No color";
+  }
+
+  onChooseItem(c) {
+    this.onChoose(c);
+  }
+}
 
 class TahoeOrganizeSettingTab extends PluginSettingTab {
   constructor(app, plugin) {
