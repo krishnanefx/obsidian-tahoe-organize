@@ -364,7 +364,7 @@ class ImageTextSearchModal extends SuggestModal {
 
 // Text read from an image is shown as it was, not taken for Markdown: no headings, tags, links or embeds.
 function escapeForNote(text) {
-  return text.replace(/^#/gm, "\\#").replace(/(?<![\w\\])#(?=[\p{L}\p{N}_/-])/gu, "\\#").replace(/\[\[/g, "\\[[");
+  return text.replace(/^#/gm, "\\#").replace(/(^|[^\w\\])#(?=[\p{L}\p{N}_/-])/gu, "$1\\#").replace(/\[\[/g, "\\[[");
 }
 
 export { OcrIndex, ImageTextSearchModal, escapeForNote };
