@@ -79,7 +79,7 @@ async function analyseVault(app, settings) {
   for (const f of notes) {
     if (isExcluded(f.path) || f.stat.size > 400) continue;
     const text = await app.vault.cachedRead(f);
-    if (!text.replace(/^---\n[\s\S]*?\n---\n?/, "").trim()) empty.push(f);
+    if (!text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "").trim()) empty.push(f);
   }
 
   // Orphans: nothing links in and nothing links out (even to a note that doesn't exist yet).
@@ -227,7 +227,13 @@ class HealthView extends ItemView {
       this.action(row, "Create note", async () => {
         const parent = this.app.fileManager.getNewFileParent(b.sources[0]);
         const path = normalizePath(`${parent.isRoot() ? "" : parent.path + "/"}${b.link.split("#")[0]}.md`);
-        if (!this.app.vault.getAbstractFileByPath(path)) await this.app.vault.create(path, "");
+        try {
+          if (!this.app.vault.getAbstractFileByPath(path)) await this.app.vault.create(path, "");
+        } catch (e) {
+          // Windows doesn't allow * " < > : | ? in file names, or a name ending in a dot.
+          notice(`Couldn't create ${path}: ${e && e.message ? e.message : e}`);
+          return;
+        }
         notice(`Created ${path}`);
         this.rescanSoon();
       });
@@ -324,7 +330,7 @@ class HealthView extends ItemView {
           col.createDiv({ cls: "tahoe-organize-compare-title", text: f.basename });
           if (point) col.createDiv({ cls: "tahoe-organize-compare-point", text: point });
           const body = col.createDiv({ cls: "tahoe-organize-compare-body" });
-          this.app.vault.cachedRead(f).then((t) => body.setText(t.replace(/^---\n[\s\S]*?\n---\n?/, "").trim()));
+          this.app.vault.cachedRead(f).then((t) => body.setText(t.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "").trim()));
         }
       }
     });
@@ -341,7 +347,7 @@ class HealthView extends ItemView {
     });
     if (!ok) return;
     const app = this.app;
-    const dropText = (await app.vault.read(drop)).replace(/^---\n[\s\S]*?\n---\n?/, "").trim();
+    const dropText = (await app.vault.read(drop)).replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "").trim();
     const dropTags = (app.metadataCache.getFileCache(drop)?.frontmatter?.tags) || [];
     await app.vault.process(keep, (data) => `${data.replace(/\s*$/, "")}\n\n---\n*Merged from “${drop.basename}”*\n\n${dropText}\n`);
     if ((Array.isArray(dropTags) ? dropTags : [dropTags]).length) {
@@ -440,7 +446,7 @@ class HealthView extends ItemView {
   }
 
   async trashAll(files, what) {
-    const ok = await confirm(this.app, { title: `Move ${files.length} ${what} to the Trash?`, message: Platform.isMobile ? "You can get them back from the .trash folder in your vault." : "You can get them back from the Trash in Finder." });
+    const ok = await confirm(this.app, { title: `Move ${files.length} ${what} to the Trash?`, message: Platform.isMobile ? "You can get them back from the .trash folder in your vault." : Platform.isMacOS ? "You can get them back from the Trash in Finder." : Platform.isWin ? "You can get them back from the Recycle Bin." : "You can get them back from your system’s trash." });
     if (!ok) return;
     for (const f of files) await moveToTrash(this.app, f);
     notice(`Moved ${files.length} ${what} to the Trash`);

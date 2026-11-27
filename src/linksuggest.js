@@ -5,7 +5,7 @@
  * vaults.
  */
 
-import { editorInfoField, Notice } from "obsidian";
+import { editorInfoField, Notice, Platform } from "obsidian";
 import { ViewPlugin, Decoration } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
@@ -150,7 +150,7 @@ function suggestionsPlugin(plugin, index) {
           const linktext = plugin.app.metadataCache.fileToLinktext(file, source, true);
           const insert = shown === linktext ? `[[${linktext}]]` : `[[${linktext}|${shown}]]`;
           view.dispatch({ changes: { from: found.from, to: found.to, insert }, selection: { anchor: found.from + insert.length }, userEvent: "input.link" });
-          new Notice(`Linked to ${file.basename} — ⌘Z to undo`, 1600);
+          new Notice(`Linked to ${file.basename} — ${Platform.isMacOS ? "⌘Z" : "Ctrl+Z"} to undo`, 1600);
           return true;
         },
       },

@@ -313,7 +313,7 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName(name)
         .setDesc(desc)
-        .addText((t) => t.setPlaceholder(guess[key.replace("Folder", "")] || "").setValue(s[key]).onChange(async (v) => ((s[key] = v.trim().replace(/\/$/, "")), await save())));
+        .addText((t) => t.setPlaceholder(guess[key.replace("Folder", "")] || "").setValue(s[key]).onChange(async (v) => ((s[key] = v.trim().replace(/\\/g, "/").replace(/\/+$/, "")), await save())));
     folderSetting("inboxFolder", "Inbox folder", `Detected: ${guess.inbox || "none"}`);
     folderSetting("archiveFolder", "Archive to", "Where A sends a note. Created if it doesn’t exist.");
     folderSetting("promoteFolder", "Promote to", "Where P sends a note — your permanent notes.");
@@ -336,7 +336,7 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Folder")
       .setDesc(`Where new literature notes and their PDFs go. Detected: ${litGuess}`)
-      .addText((t) => t.setPlaceholder(litGuess).setValue(s.literatureFolder).onChange(async (v) => ((s.literatureFolder = v.trim().replace(/\/$/, "")), await save())));
+      .addText((t) => t.setPlaceholder(litGuess).setValue(s.literatureFolder).onChange(async (v) => ((s.literatureFolder = v.trim().replace(/\\/g, "/").replace(/\/+$/, "")), await save())));
     new Setting(containerEl)
       .setName("Save the PDF")
       .setDesc("From arXiv, or an open-access copy when there is one. Paywalled copies aren't downloaded.")
@@ -378,7 +378,7 @@ class TahoeOrganizeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Never suggest from folders")
       .setDesc("Notes in these folders aren’t offered as links — for example Templates. Separated by commas.")
-      .addTextArea((t) => t.setValue((s.linkIgnoreFolders || []).join(", ")).onChange(async (v) => ((s.linkIgnoreFolders = v.split(",").map((x) => x.trim().replace(/\/$/, "")).filter(Boolean)), await save())));
+      .addTextArea((t) => t.setValue((s.linkIgnoreFolders || []).join(", ")).onChange(async (v) => ((s.linkIgnoreFolders = v.split(",").map((x) => x.trim().replace(/\\/g, "/").replace(/\/+$/, "")).filter(Boolean)), await save())));
 
     new Setting(containerEl).setName("Vault health").setHeading();
     new Setting(containerEl)

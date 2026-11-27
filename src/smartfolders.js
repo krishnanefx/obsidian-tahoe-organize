@@ -5,7 +5,7 @@
  * — and updates live as notes change.
  */
 
-import { ItemView, Modal, Setting, Menu, Keymap, getAllTags, setIcon } from "obsidian";
+import { ItemView, Modal, Setting, Menu, Keymap, getAllTags, setIcon, Platform } from "obsidian";
 import { debounce, ignored } from "./util";
 
 const VIEW_SMART = "tahoe-smart-folders";
@@ -271,7 +271,7 @@ class SmartFoldersView extends ItemView {
       }
       if (finding) children.createDiv({ cls: "tahoe-smart-none is-finding", text: `Finding notes about “${finding}”…` });
       else if (!files.length && topics.length && !topics.some((t) => topicStore.get(t)))
-        children.createDiv({ cls: "tahoe-smart-none", text: this.app.plugins.getPlugin("tahoe-intelligence") ? "Reading your notes — this fills in shortly" : "“About” needs Tahoe Intelligence on your Mac" });
+        children.createDiv({ cls: "tahoe-smart-none", text: this.app.plugins.getPlugin("tahoe-intelligence") && Platform.isMacOS ? "Reading your notes — this fills in shortly" : "“About” needs Tahoe Intelligence on a Mac" });
       else if (!files.length) children.createDiv({ cls: "tahoe-smart-none", text: "No matching notes" });
       if (files.length > shown.length) children.createDiv({ cls: "tahoe-smart-none", text: `and ${files.length - shown.length} more` });
     }

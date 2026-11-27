@@ -121,7 +121,7 @@ class TriageModal extends Modal {
     const info = head.createDiv({ cls: "tahoe-triage-info" });
     info.createDiv({ cls: "tahoe-triage-title", text: file.basename });
     const age = Math.max(0, Math.round((Date.now() - file.stat.ctime) / 86400000));
-    const words = (text.replace(/^---\n[\s\S]*?\n---\n?/, "").match(/[\p{L}\p{N}]+/gu) || []).length;
+    const words = (text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "").match(/[\p{L}\p{N}]+/gu) || []).length;
     info.createDiv({ cls: "tahoe-triage-meta", text: `${age === 0 ? "Added today" : age === 1 ? "Added yesterday" : `Added ${age} days ago`} · ${words.toLocaleString()} ${words === 1 ? "word" : "words"}` });
     // Previous / next — the only way to skip a note on iPhone.
     const nav = head.createDiv({ cls: "tahoe-triage-step" });

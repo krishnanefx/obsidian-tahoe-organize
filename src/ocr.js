@@ -279,6 +279,8 @@ class OcrIndex {
     for (const [path, e] of Object.entries(this.entries)) {
       const text = e.text || "";
       if (!text) continue;
+      // An image moved or removed where it can't be read again (Windows, phones): not a result.
+      if (!(this.app.vault.getAbstractFileByPath(path) instanceof TFile)) continue;
       const lower = text.toLowerCase();
       const name = path.toLowerCase();
       if (words.length && !words.every((w) => lower.includes(w) || name.includes(w))) continue;
@@ -300,7 +302,8 @@ class OcrIndex {
   async textFor(file) {
     const e = this.entries[file.path];
     if (e && e.mtime === file.stat.mtime) return e.text;
-    if (!this.canRead) return null;
+    // Here it can't be read again: the text read on a Mac, even if syncing changed the file's date.
+    if (!this.canRead) return e ? e.text : null;
     const text = await this.read(file);
     if (text != null) {
       this.entries[file.path] = { mtime: file.stat.mtime, size: file.stat.size, text };
@@ -319,7 +322,7 @@ class ImageTextSearchModal extends SuggestModal {
     this.emptyStateText = Object.keys(index.entries).length ? "No images contain that text." : "No images have been read yet.";
     this.setInstructions([
       { command: "↵", purpose: "open the note with the image" },
-      { command: "⌘ ↵", purpose: "open the image" },
+      { command: Platform.isMacOS ? "⌘ ↵" : "Ctrl ↵", purpose: "open the image" },
       { command: "esc", purpose: "close" },
     ]);
     this.scope.register(["Mod"], "Enter", () => {
